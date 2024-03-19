@@ -16,6 +16,7 @@
   "description": "A Testcontainers implementation for Keycloak",
   "license": "MIT",
   "homepage": "https://github.com/yubinTW/testcontainers-keycloak",
+  "type": "module",
   "repository": {
     "type": "git",
     "url": "https://github.com/yubinTW/testcontainers-keycloak"
@@ -29,17 +30,17 @@
     "fix-prettier": "prettier --write \"./{src,test}/**/*.ts\""
   },
   "dependencies": {
-    "axios": "^1.5.0",
-    "qs": "^6.11.2",
-    "testcontainers": "^10.2.1"
+    "axios": "^1.6.8",
+    "qs": "^6.12.0",
+    "testcontainers": "^10.7.2"
   },
   "devDependencies": {
-    "@types/dockerode": "^3.3.20",
-    "@types/node": "^18.18.0",
-    "@types/qs": "^6.9.8",
-    "@vitest/coverage-v8": "^0.34.5",
-    "prettier": "^3.0.3",
-    "typescript": "^5.2.2",
-    "vitest": "^0.34.5"
+    "@types/dockerode": "^3.3.26",
+    "@types/node": "^20.11.28",
+    "@types/qs": "^6.9.12",
+    "@vitest/coverage-v8": "^1.4.0",
+    "prettier": "^3.2.5",
+    "typescript": "^5.4.2",
+    "vitest": "^1.4.0"
   }
 }
