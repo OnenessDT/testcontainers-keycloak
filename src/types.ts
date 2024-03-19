@@ -128,6 +128,7 @@ export type KeycloakUser = {
   username: string
   enabled: boolean
   totp: boolean
+  email: string
   emailVerified: boolean
   firstName: string
   lastName: string
@@ -141,6 +142,22 @@ export type KeycloakUser = {
     impersonate: boolean
     manage: boolean
   }
+}
+
+export type KeycloakGroup = {
+  id: string,
+  name: string,
+  path: string,
+  subgroups: Array<string>
+}
+
+export type KeycloakRole = {
+  id: string,
+  name: string,
+  description: string,
+  composite: boolean,
+  clientRole: boolean,
+  containerId: string
 }
 
 export type KeycloakClient = {
