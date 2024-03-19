@@ -1,7 +1,10 @@
 {
-  "name": "testcontainers-keycloak",
+  "name": "@onenessdt/testcontainers-keycloak",
   "author": "Yubin, Hsu",
-  "version": "0.3.1",
+  "contributors": [
+    "Abel M."
+  ],
+  "version": "0.4.1",
   "main": "dist/keycloak-container",
   "types": "dist/keycloak-container",
   "keywords": [
@@ -15,14 +18,14 @@
   ],
   "description": "A Testcontainers implementation for Keycloak",
   "license": "MIT",
-  "homepage": "https://github.com/yubinTW/testcontainers-keycloak",
+  "homepage": "https://github.com/OnenessDT/testcontainers-keycloak",
   "type": "module",
   "repository": {
     "type": "git",
-    "url": "https://github.com/yubinTW/testcontainers-keycloak"
+    "url": "https://github.com/OnenessDT/testcontainers-keycloak"
   },
   "bugs": {
-    "url": "https://github.com/yubinTW/testcontainers-keycloak/issues"
+    "url": "https://github.com/OnenessDT/testcontainers-keycloak/issues"
   },
   "scripts": {
     "build": "tsc",
