@@ -11,7 +11,7 @@ describe('Keycloak Container Test', () => {
   let keycloak: StartedKeycloakContainer
 
   beforeAll(async () => {
-    const mypath = path.dirname(fileURLToPath(import.meta.url));
+    const mypath = path.dirname(fileURLToPath(import.meta.url))
     const realmToImport = path.join(mypath, 'resources/realm-export.json')
     keycloak = await new KeycloakContainer()
       .withStartupTimeout(600_000)
@@ -25,7 +25,7 @@ describe('Keycloak Container Test', () => {
 
   afterAll(async () => {
     await keycloak.stop()
-  });
+  })
 
   it('should return whoami result', async () => {
     const whoamiResult = 
@@ -219,6 +219,25 @@ describe('Keycloak Container Test', () => {
     })
     const cid = await keycloak.getCidByClientId('demo', 'clientWithoutServiceAccount') as string
     await expect(keycloak.getServiceAccountUserFromClient('demo', cid)).rejects.toThrow()
+  })
+
+  it('should get access_token for client with service accounts enabled', async () => {
+    await keycloak.createClient('demo', {
+      clientId: 'clientToTestGetAccessTokenForClient',
+      secret: 'clientpassword',
+      serviceAccountsEnabled: true,
+    })
+    const accessToken = await keycloak.getAccessTokenForClient('demo', 'clientToTestGetAccessTokenForClient', 'clientpassword')
+    expect(accessToken).to.be.a('string').that.is.not.empty
+  })
+
+  it('should throw exception when getting access_token for client with service accounts disabled', async () => {
+    await keycloak.createClient('demo', {
+      clientId: 'clientToTestGetAccessTokenForClientWithoutServiceAccount',
+      secret: 'clientpassword',
+      serviceAccountsEnabled: false
+    })
+    await expect(keycloak.getAccessTokenForClient('demo', 'clientToTestGetAccessTokenForClientWithoutServiceAccount', 'clientpassword')).rejects.toThrow()
   })
 
   it('should get access_token', async () => {
