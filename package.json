@@ -4,7 +4,7 @@
   "contributors": [
     "Abel M."
   ],
-  "version": "0.4.2",
+  "version": "0.4.3",
   "main": "dist/keycloak-container",
   "types": "dist/keycloak-container",
   "keywords": [
@@ -33,6 +33,7 @@
     "fix-prettier": "prettier --write \"./{src,test}/**/*.ts\""
   },
   "dependencies": {
+    "@keycloak/keycloak-admin-client": "^24.0.1",
     "axios": "^1.6.8",
     "qs": "^6.12.0",
     "testcontainers": "^10.7.2"
