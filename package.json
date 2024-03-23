@@ -4,9 +4,9 @@
   "contributors": [
     "Abel M."
   ],
-  "version": "0.4.6",
-  "main": "dist/keycloak-container",
-  "types": "dist/keycloak-container",
+  "version": "0.4.7",
+  "main": "dist/keycloak-container.js",
+  "types": "dist/keycloak-container.d.ts",
   "keywords": [
     "testcontainers",
     "keycloak",
