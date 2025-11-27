@@ -28,8 +28,7 @@ describe('Keycloak Container Test', () => {
   })
 
   it('should return whoami result', async () => {
-    const whoamiResult = 
-    await keycloak.exec(['whoami'])
+    const whoamiResult = await keycloak.exec(['whoami'])
 
     expect(whoamiResult.exitCode).toBe(0)
     expect(whoamiResult.output.trim()).toBe('keycloak')
@@ -38,7 +37,7 @@ describe('Keycloak Container Test', () => {
   it('should have imported the realm', async () => {
     const realm = await keycloak.getRealm('main')
     const sensorRoleId = await keycloak.getRealmRoleByName('main', 'sensor')
-    
+
     expect(realm).to.be.an('object').that.have.property('realm')
     expect(realm).to.have.property('realm', 'main')
     expect(sensorRoleId).to.have.property('name', 'sensor')
@@ -79,17 +78,17 @@ describe('Keycloak Container Test', () => {
 
   it('should add a user to a group', async () => {
     await keycloak.createUser('demo', {
-      username: 'user02', 
-      email: 'user02@example.com', 
-      firstName: 'User', 
-      lastName: 'Zerotwo', 
-      emailVerified: true, 
+      username: 'user02',
+      email: 'user02@example.com',
+      firstName: 'User',
+      lastName: 'Zerotwo',
+      emailVerified: true,
       enabled: true
     })
     await keycloak.createGroup('demo', 'group2')
     await keycloak.addUserToGroup('demo', 'user02', 'group2')
     const groups = await keycloak.getGroupsFromUser('demo', 'user02')
-    expect(groups.map(g => g.name)).includes('group2')
+    expect(groups.map((g) => g.name)).includes('group2')
   })
 
   it('should create and retrieve clients', async () => {
@@ -98,12 +97,9 @@ describe('Keycloak Container Test', () => {
       secret: 'client01Secret',
       redirectUris: ['http://localhost:8888', 'http://localhost:8888/callback'],
       webOrigins: ['http://localhost:8888/home'],
-      directAccessGrantsEnabled: true,
+      directAccessGrantsEnabled: true
     }
-    await keycloak.createClient(
-      'demo',
-      clientRepr
-    )
+    await keycloak.createClient('demo', clientRepr)
     const cid = await keycloak.getCidByClientId('demo', 'client01')
 
     expect(cid).to.be.a('string')
@@ -119,8 +115,8 @@ describe('Keycloak Container Test', () => {
   })
 
   it('should return undefined for a non-existent client', async () => {
-     const clientId = await keycloak.getCidByClientId('demo','non-exist-client-id')
-     expect(clientId).to.be.undefined
+    const clientId = await keycloak.getCidByClientId('demo', 'non-exist-client-id')
+    expect(clientId).to.be.undefined
   })
 
   it('should create a client scope', async () => {
@@ -128,7 +124,7 @@ describe('Keycloak Container Test', () => {
       name: 'scope1',
       description: 'scope1',
       protocol: 'openid-connect',
-      attributes: {},
+      attributes: {}
     }
     await keycloak.createClientScope('demo', scope)
     const scopeId = await keycloak.getClientScopeIdByName('demo', 'scope1')
@@ -142,7 +138,7 @@ describe('Keycloak Container Test', () => {
       name: 'scope2',
       description: 'scope2',
       protocol: 'openid-connect',
-      attributes: {},
+      attributes: {}
     }
     await keycloak.createClientScope('demo', scope)
     const scopeId = await keycloak.getClientScopeIdByName('demo', 'scope2')
@@ -159,7 +155,7 @@ describe('Keycloak Container Test', () => {
       name: 'scope3',
       description: 'scope3',
       protocol: 'openid-connect',
-      attributes: {},
+      attributes: {}
     }
     await keycloak.createClientScope('demo', scope)
     const scopeId = await keycloak.getClientScopeIdByName('demo', 'scope3')
@@ -179,7 +175,7 @@ describe('Keycloak Container Test', () => {
   })
 
   it('should create and retrieve client role', async () => {
-    const cid = await keycloak.getCidByClientId('demo', 'client01') as string
+    const cid = (await keycloak.getCidByClientId('demo', 'client01')) as string
     await keycloak.createClientRole('demo', cid, 'role2')
     const role = await keycloak.getClientRoleByName('demo', cid, 'role2')
 
@@ -190,15 +186,15 @@ describe('Keycloak Container Test', () => {
     await keycloak.assignRealmRoleToUser('demo', 'user02', 'role1')
     const roles = await keycloak.getAssignedRealmRolesFromUser('demo', 'user02')
 
-    expect(roles.map(r => r.name)).include('role1')
+    expect(roles.map((r) => r.name)).include('role1')
   })
 
   it('should assign client role to a user', async () => {
-    const cid = await keycloak.getCidByClientId('demo', 'client01') as string
+    const cid = (await keycloak.getCidByClientId('demo', 'client01')) as string
     await keycloak.assignClientRoleToUser('demo', 'user02', cid, 'role2')
     const roles = await keycloak.getAssignedClientRolesFromUser('demo', 'user02', cid)
 
-    expect(roles.map(r => r.name)).include('role2')
+    expect(roles.map((r) => r.name)).include('role2')
   })
 
   it('should retrieve service account user for client with service account enabled', async () => {
@@ -206,7 +202,7 @@ describe('Keycloak Container Test', () => {
       clientId: 'clientWithServiceAccount',
       serviceAccountsEnabled: true
     })
-    const cid = await keycloak.getCidByClientId('demo', 'clientWithServiceAccount') as string
+    const cid = (await keycloak.getCidByClientId('demo', 'clientWithServiceAccount')) as string
     const user = await keycloak.getServiceAccountUserFromClient('demo', cid)
 
     expect(user).to.have.property('username', 'service-account-clientwithserviceaccount')
@@ -217,7 +213,7 @@ describe('Keycloak Container Test', () => {
       clientId: 'clientWithoutServiceAccount',
       serviceAccountsEnabled: false
     })
-    const cid = await keycloak.getCidByClientId('demo', 'clientWithoutServiceAccount') as string
+    const cid = (await keycloak.getCidByClientId('demo', 'clientWithoutServiceAccount')) as string
     await expect(keycloak.getServiceAccountUserFromClient('demo', cid)).rejects.toThrow()
   })
 
@@ -225,9 +221,13 @@ describe('Keycloak Container Test', () => {
     await keycloak.createClient('demo', {
       clientId: 'clientToTestGetAccessTokenForClient',
       secret: 'clientpassword',
-      serviceAccountsEnabled: true,
+      serviceAccountsEnabled: true
     })
-    const accessToken = await keycloak.getAccessTokenForClient('demo', 'clientToTestGetAccessTokenForClient', 'clientpassword')
+    const accessToken = await keycloak.getAccessTokenForClient(
+      'demo',
+      'clientToTestGetAccessTokenForClient',
+      'clientpassword'
+    )
     expect(accessToken).to.be.a('string').that.is.not.empty
   })
 
@@ -237,11 +237,23 @@ describe('Keycloak Container Test', () => {
       secret: 'clientpassword',
       serviceAccountsEnabled: false
     })
-    await expect(keycloak.getAccessTokenForClient('demo', 'clientToTestGetAccessTokenForClientWithoutServiceAccount', 'clientpassword')).rejects.toThrow()
+    await expect(
+      keycloak.getAccessTokenForClient(
+        'demo',
+        'clientToTestGetAccessTokenForClientWithoutServiceAccount',
+        'clientpassword'
+      )
+    ).rejects.toThrow()
   })
 
   it('should get access_token', async () => {
-    const accessToken = await keycloak.getAccessToken('demo', 'user01@example.com', 'user01password', 'client01', 'client01Secret')
+    const accessToken = await keycloak.getAccessToken(
+      'demo',
+      'user01@example.com',
+      'user01password',
+      'client01',
+      'client01Secret'
+    )
     expect(accessToken).toBeTruthy()
   })
 
@@ -276,5 +288,4 @@ describe('Keycloak Container Test', () => {
     const userId = await keycloak.getUserIdByUsername('demo', 'non-exist-user')
     expect(userId).to.be.undefined
   })
-
 })

@@ -1,16 +1,20 @@
 import { GenericContainer, StartedTestContainer, AbstractStartedContainer, Wait } from 'testcontainers'
-import { ClientSecret, KeycloakClient, KeycloakRealm, KeycloakUser } from './types'
 import axios from 'axios'
 import qs from 'qs'
-import fs from "node:fs"
+import fs from 'node:fs'
 import KcAdminClient from '@keycloak/keycloak-admin-client'
 import {
-  RealmRepresentation, GroupRepresentation, RoleRepresentation, UserRepresentation,
-  ClientRepresentation, CredentialRepresentation, ClientScopeRepresentation
+  RealmRepresentation,
+  GroupRepresentation,
+  RoleRepresentation,
+  UserRepresentation,
+  ClientRepresentation,
+  CredentialRepresentation,
+  ClientScopeRepresentation
 } from './types.js'
 
 export class KeycloakContainer extends GenericContainer {
-  private waitingLog = 'Added user \'admin\' to realm \'master\''
+  private waitingLog = "Added user 'admin' to realm 'master'"
   private adminUsername = 'admin'
   private adminPassword = 'admin'
   private realmToImport?: string
@@ -44,17 +48,19 @@ export class KeycloakContainer extends GenericContainer {
       .withEnvironment({ KEYCLOAK_ADMIN: this.adminUsername })
       .withEnvironment({ KEYCLOAK_ADMIN_PASSWORD: this.adminPassword })
 
-    const command = ["start-dev"]
+    const command = ['start-dev']
     if (this.realmToImport !== undefined) {
       try {
         const content = fs.readFileSync(this.realmToImport)
-        this.withCopyContentToContainer([{
-          content,
-          target: "/opt/keycloak/data/import/realm.json"
-        }])
-        command.push("--import-realm")
+        this.withCopyContentToContainer([
+          {
+            content,
+            target: '/opt/keycloak/data/import/realm.json'
+          }
+        ])
+        command.push('--import-realm')
       } catch (e) {
-        console.log("Failed to load file to import realm")
+        console.log('Failed to load file to import realm')
       }
     }
     this.withCommand(command)
@@ -192,13 +198,13 @@ export class StartedKeycloakContainer extends AbstractStartedContainer {
         search: groupName
       })
 
-      return groups.find(g => g.name === groupName)?.id
+      return groups.find((g) => g.name === groupName)?.id
     } catch (error: any) {
       throw new Error(`Failed to get group: ${error.message}`)
     }
   }
 
-  public async createRealmRole(realmName: string, role: string, description: string = ""): Promise<void> {
+  public async createRealmRole(realmName: string, role: string, description: string = ''): Promise<void> {
     const adminClient = await this.getAuthenticatedAdminClient()
     try {
       await adminClient.roles.create({
@@ -211,7 +217,12 @@ export class StartedKeycloakContainer extends AbstractStartedContainer {
     }
   }
 
-  public async createClientRole(realmName: string, clientUniqueId: string, role: string, description: string = ""): Promise<void> {
+  public async createClientRole(
+    realmName: string,
+    clientUniqueId: string,
+    role: string,
+    description: string = ''
+  ): Promise<void> {
     const adminClient = await this.getAuthenticatedAdminClient()
     try {
       await adminClient.clients.createRole({
@@ -238,7 +249,11 @@ export class StartedKeycloakContainer extends AbstractStartedContainer {
     }
   }
 
-  public async getClientRoleByName(realmName: string, clientUniqueId: string, roleName: string): Promise<RoleRepresentation | undefined> {
+  public async getClientRoleByName(
+    realmName: string,
+    clientUniqueId: string,
+    roleName: string
+  ): Promise<RoleRepresentation | undefined> {
     const adminClient = await this.getAuthenticatedAdminClient()
     try {
       return await adminClient.clients.findRole({
@@ -268,7 +283,7 @@ export class StartedKeycloakContainer extends AbstractStartedContainer {
     try {
       await adminClient.users.create({
         ...user,
-        realm: realmName,
+        realm: realmName
       })
     } catch (error: any) {
       throw new Error(`Failed to create user: ${error.message}`)
@@ -294,7 +309,7 @@ export class StartedKeycloakContainer extends AbstractStartedContainer {
         realm: realmName,
         username: username
       })
-      return users.find(user => user.username === username)?.id
+      return users.find((user) => user.username === username)?.id
     } catch (error: any) {
       throw new Error(`Failed to get user ID: ${error.message}`)
     }
@@ -375,7 +390,11 @@ export class StartedKeycloakContainer extends AbstractStartedContainer {
     }
   }
 
-  public async getAssignedClientRolesFromUser(realmName: string, username: string, clientUniqueId: string): Promise<Array<RoleRepresentation>> {
+  public async getAssignedClientRolesFromUser(
+    realmName: string,
+    username: string,
+    clientUniqueId: string
+  ): Promise<Array<RoleRepresentation>> {
     const adminClient = await this.getAuthenticatedAdminClient()
     const userId = await this.getUserIdByUsername(realmName, username)
     if (userId === undefined) {
@@ -406,10 +425,12 @@ export class StartedKeycloakContainer extends AbstractStartedContainer {
       await adminClient.users.addRealmRoleMappings({
         realm: realmName,
         id: userId,
-        roles: [{
-          id: role.id as string,
-          name: role.name as string
-        }]
+        roles: [
+          {
+            id: role.id as string,
+            name: role.name as string
+          }
+        ]
       })
     } catch (error: any) {
       throw new Error(`Failed to assign realm role to user: ${error.message}`)
@@ -431,10 +452,12 @@ export class StartedKeycloakContainer extends AbstractStartedContainer {
         realm: realmName,
         id: userId,
         clientUniqueId,
-        roles: [{
-          id: role.id as string,
-          name: role.name as string
-        }]
+        roles: [
+          {
+            id: role.id as string,
+            name: role.name as string
+          }
+        ]
       })
     } catch (error: any) {
       throw new Error(`Failed to assign client role to user: ${error.message}`)
@@ -446,7 +469,7 @@ export class StartedKeycloakContainer extends AbstractStartedContainer {
     try {
       await adminClient.clients.create({
         ...client,
-        realm: realmName,
+        realm: realmName
       })
     } catch (error: any) {
       throw new Error(`Failed to create client: ${error.message}`)
@@ -498,16 +521,19 @@ export class StartedKeycloakContainer extends AbstractStartedContainer {
     const adminClient = await this.getAuthenticatedAdminClient()
     try {
       const clientScopes = await adminClient.clientScopes.find({
-        realm: realmName,
+        realm: realmName
       })
-      const clientScope = clientScopes.find(cs => cs.name === clientScopeName)
+      const clientScope = clientScopes.find((cs) => cs.name === clientScopeName)
       return clientScope?.id
     } catch (error: any) {
       throw new Error(`Failed to get client scope: ${error.message}`)
     }
   }
 
-  public async getClientScopeById(realmName: string, clientScopeId: string): Promise<ClientScopeRepresentation | undefined> {
+  public async getClientScopeById(
+    realmName: string,
+    clientScopeId: string
+  ): Promise<ClientScopeRepresentation | undefined> {
     const adminClient = await this.getAuthenticatedAdminClient()
     try {
       return await adminClient.clientScopes.findOne({
@@ -545,24 +571,31 @@ export class StartedKeycloakContainer extends AbstractStartedContainer {
     }
   }
 
-  public async getDefaultClientScopesFromClient(realmName: string, cid: string, optional: boolean): Promise<Array<ClientScopeRepresentation>> {
+  public async getDefaultClientScopesFromClient(
+    realmName: string,
+    cid: string,
+    optional: boolean
+  ): Promise<Array<ClientScopeRepresentation>> {
     const adminClient = await this.getAuthenticatedAdminClient()
     try {
       return await adminClient.clients.listDefaultClientScopes({
         id: cid,
-        realm: realmName,
+        realm: realmName
       })
     } catch (error: any) {
       throw new Error(`Failed to get client scopes from client: ${error.message}`)
     }
   }
 
-  public async getOptionalClientScopesFromClient(realmName: string, cid: string): Promise<Array<ClientScopeRepresentation>> {
+  public async getOptionalClientScopesFromClient(
+    realmName: string,
+    cid: string
+  ): Promise<Array<ClientScopeRepresentation>> {
     const adminClient = await this.getAuthenticatedAdminClient()
     try {
       return await adminClient.clients.listOptionalClientScopes({
         id: cid,
-        realm: realmName,
+        realm: realmName
       })
     } catch (error: any) {
       throw new Error(`Failed to get client scopes from client: ${error.message}`)
@@ -581,11 +614,7 @@ export class StartedKeycloakContainer extends AbstractStartedContainer {
     }
   }
 
-  public async getAccessTokenForClient(
-    realmName: string,
-    clientId: string,
-    clientSecret: string
-  ): Promise<string> {
+  public async getAccessTokenForClient(realmName: string, clientId: string, clientSecret: string): Promise<string> {
     const tokenEndpoint = new URL(`realms/${realmName}/protocol/openid-connect/token`, this.baseURL).toString()
 
     const payload = qs.stringify({
@@ -597,7 +626,7 @@ export class StartedKeycloakContainer extends AbstractStartedContainer {
     try {
       const response = await axios.post(tokenEndpoint, payload, {
         headers: {
-          "Content-Type": "application/x-www-form-urlencoded"
+          'Content-Type': 'application/x-www-form-urlencoded'
         }
       })
       const accessToken: string = response.data['access_token']
@@ -616,7 +645,7 @@ export class StartedKeycloakContainer extends AbstractStartedContainer {
     username: string,
     password: string,
     clientId: string,
-    clientSecret: string,
+    clientSecret: string
   ): Promise<string> {
     const tokenEndpoint = new URL(`realms/${realmName}/protocol/openid-connect/token`, this.baseURL).toString()
 
@@ -629,7 +658,7 @@ export class StartedKeycloakContainer extends AbstractStartedContainer {
     try {
       const response = await axios.post(tokenEndpoint, payload, {
         headers: {
-          "Content-Type": "application/x-www-form-urlencoded"
+          'Content-Type': 'application/x-www-form-urlencoded'
         },
         auth: {
           username: clientId,
@@ -678,3 +707,4 @@ export class StartedKeycloakContainer extends AbstractStartedContainer {
     }
   }
 }
+
