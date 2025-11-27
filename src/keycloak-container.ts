@@ -1,11 +1,12 @@
 import { GenericContainer, StartedTestContainer, AbstractStartedContainer, Wait } from 'testcontainers'
+import { ClientSecret, KeycloakClient, KeycloakRealm, KeycloakUser } from './types'
 import axios from 'axios'
 import qs from 'qs'
 import fs from "node:fs"
 import KcAdminClient from '@keycloak/keycloak-admin-client'
-import { 
-  RealmRepresentation, GroupRepresentation, RoleRepresentation, UserRepresentation, 
-  ClientRepresentation, CredentialRepresentation, ClientScopeRepresentation 
+import {
+  RealmRepresentation, GroupRepresentation, RoleRepresentation, UserRepresentation,
+  ClientRepresentation, CredentialRepresentation, ClientScopeRepresentation
 } from './types.js'
 
 export class KeycloakContainer extends GenericContainer {
@@ -51,7 +52,7 @@ export class KeycloakContainer extends GenericContainer {
           content,
           target: "/opt/keycloak/data/import/realm.json"
         }])
-        command.push("--import-realm")  
+        command.push("--import-realm")
       } catch (e) {
         console.log("Failed to load file to import realm")
       }
@@ -196,7 +197,7 @@ export class StartedKeycloakContainer extends AbstractStartedContainer {
       throw new Error(`Failed to get group: ${error.message}`)
     }
   }
-  
+
   public async createRealmRole(realmName: string, role: string, description: string = ""): Promise<void> {
     const adminClient = await this.getAuthenticatedAdminClient()
     try {
@@ -273,7 +274,7 @@ export class StartedKeycloakContainer extends AbstractStartedContainer {
       throw new Error(`Failed to create user: ${error.message}`)
     }
   }
-  
+
   public async getUserById(realmName: string, userId: string): Promise<UserRepresentation | undefined> {
     const adminClient = await this.getAuthenticatedAdminClient()
     try {
@@ -368,7 +369,7 @@ export class StartedKeycloakContainer extends AbstractStartedContainer {
       return adminClient.users.listRealmRoleMappings({
         realm: realmName,
         id: userId
-      })  
+      })
     } catch (error: any) {
       throw new Error(`Failed to get assigned realm roles from user: ${error.message}`)
     }
@@ -385,7 +386,7 @@ export class StartedKeycloakContainer extends AbstractStartedContainer {
         realm: realmName,
         id: userId,
         clientUniqueId
-      })  
+      })
     } catch (error: any) {
       throw new Error(`Failed to get assigned client roles from user: ${error.message}`)
     }
